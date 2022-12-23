@@ -1,1 +1,1 @@
-# [michaelcchu.github.io/easyplay3](https://michaelcchu.github.io/easyplay3/)
+# [mcchu.com/easyplay3](https://mcchu.com/easyplay3/)
