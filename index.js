@@ -72,7 +72,7 @@ const reader = new FileReader();
 reader.onload = function(e) {
     const midi = new Midi(e.target.result);
     voices[0].setFrequencies(toFreq(midi.tracks[LH_track].notes));
-    voices[1].setFrequencies(toFreq(midi.tracks[LH_track].notes));
+    voices[1].setFrequencies(toFreq(midi.tracks[RH_track].notes));
 }
 
 function resetVariables() {
