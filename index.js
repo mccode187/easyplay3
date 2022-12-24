@@ -3,18 +3,28 @@ const value = {"c":0,"d":2,"e":4,"f":5,"g":7,"a":9,"b":11,"#":1,"&":-1};
 let on = false;
 let paused; let LH_track; let RH_track;
 
-function voice(keys) {
+function makeOscillator() {
     const oscillator = new OscillatorNode(audioContext, {frequency: 0});
     oscillator.connect(audioContext.destination);
-    const frequencies = [];
-    const pressedKey = null;
+    return oscillator;
+}
+
+function voice(keys) {
+    const oscillator = makeOscillator();
+    let frequencies = [];
+    let pressedKey = null;
     let index = 0;
-    
+
+    function setFrequencies(seq) {
+        frequencies = seq;
+    } 
+
+    function getOscillator() {
+        return oscillator;
+    }
     function down(e) {
-        console.log(on, keys.includes(e.key),!e.repeat, (e.key != pressedKey), (index < frequencies.length), index, frequencies.length, !paused);
         if (on && keys.includes(e.key) && !e.repeat && (e.key != pressedKey) 
         && (index < frequencies.length) && !paused) {
-            console.log("entered if statement of down function");
             oscillator.frequency.value = frequencies[index];
             index++;
             pressedKey = e.key;
@@ -28,11 +38,11 @@ function voice(keys) {
         }
     }
 
-    return {oscillator, frequencies, down, up};
+    return {setFrequencies, getOscillator, down, up};
 }
 
 const voices = [voice(["f","d"]), voice(["j","k"])];
-console.log(voices);
+
 function down(e) {
     for (const voice of voices) {
         voice.down(e);
@@ -61,10 +71,8 @@ function toFreq(notes) {
 const reader = new FileReader();
 reader.onload = function(e) {
     const midi = new Midi(e.target.result);
-    voices[0].frequencies = toFreq(midi.tracks[LH_track].notes);
-    console.log(voices[0].frequencies);
-    voices[1].frequencies = toFreq(midi.tracks[LH_track].notes);
-    console.log(voices[1].frequencies);
+    voices[0].setFrequencies(toFreq(midi.tracks[LH_track].notes));
+    voices[1].setFrequencies(toFreq(midi.tracks[LH_track].notes));
 }
 
 function resetVariables() {
@@ -81,10 +89,9 @@ resetVariables();
 
 function startOscillatorsIfNeccessary() {
     if (!on) { 
-        voices[0].oscillator.start();
-        voices[1].oscillator.start();
+        voices[0].getOscillator().start();
+        voices[1].getOscillator().start();
         on = true;
-        console.log("oscillators on");
     }
 }
 
@@ -95,8 +102,8 @@ function start() {
 
 function pause() {
     paused = true;
-    voices[0].oscillator.frequency.value = 0;
-    voices[1].oscillator.frequency.value = 0;
+    voices[0].getOscillator().frequency.value = 0;
+    voices[1].getOscillator().frequency.value = 0;
 }
 
 function resume() {
