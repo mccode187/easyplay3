@@ -15,8 +15,9 @@ function voice(keys) {
     let pressedKey = null;
     let index = 0;
 
-    function setFrequencies(seq) {
+    function resetFrequencies(seq) {
         frequencies = seq;
+        index = 0;
     } 
 
     function getOscillator() {
@@ -38,7 +39,7 @@ function voice(keys) {
         }
     }
 
-    return {setFrequencies, getOscillator, down, up};
+    return {resetFrequencies, getOscillator, down, up};
 }
 
 const voices = [voice(["f","d"]), voice(["j","k"])];
@@ -71,8 +72,8 @@ function toFreq(notes) {
 const reader = new FileReader();
 reader.onload = function(e) {
     const midi = new Midi(e.target.result);
-    voices[0].setFrequencies(toFreq(midi.tracks[LH_track].notes));
-    voices[1].setFrequencies(toFreq(midi.tracks[RH_track].notes));
+    voices[0].resetFrequencies(toFreq(midi.tracks[LH_track].notes));
+    voices[1].resetFrequencies(toFreq(midi.tracks[RH_track].notes));
 }
 
 function resetVariables() {
