@@ -1,11 +1,14 @@
-const audioContext = new AudioContext(); 
+const audioContext = new AudioContext();
 const value = {"c":0,"d":2,"e":4,"f":5,"g":7,"a":9,"b":11,"#":1,"&":-1};
+const voices = Array(2);
 let on = false;
 let paused; let LH_track; let RH_track;
 
 function makeOscillator() {
     const oscillator = new OscillatorNode(audioContext, {frequency: 0});
-    oscillator.connect(audioContext.destination);
+    const gainNode = new GainNode(audioContext);
+    gainNode.gain.value = 1/voices.length;
+    oscillator.connect(gainNode).connect(audioContext.destination)
     return oscillator;
 }
 
@@ -42,7 +45,8 @@ function voice(keys) {
     return {resetFrequencies, getOscillator, down, up};
 }
 
-const voices = [voice(["f","d"]), voice(["j","k"])];
+voices[0] = voice(["f","d"]);
+voices[1] = voice(["j","k"]);
 
 function down(e) {
     for (const voice of voices) {
